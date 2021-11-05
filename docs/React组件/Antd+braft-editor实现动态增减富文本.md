@@ -1,6 +1,6 @@
 本文将介绍React项目基于Antd的Form去使用[Braft-editor](https://braft.margox.cn/)实现富文本的动态新增和删除。
 
-### 一、需求背景
+## 一、需求背景
 
 需求内容是点击配置后进入配置模式（如果已存在文本模块要转换为富文本编辑模式），在页面上可以动态新增删除富文本，然后点击保存按钮统一保存所有文本并展示。
 
@@ -8,14 +8,14 @@
 
 ![](https://files.mdnice.com/user/10344/1f3d69b2-e532-436d-80c5-b0625c934d70.png)
 
-### 二、最终效果
+## 二、最终效果
 
 最终实现的效果图如下：
 
 ![效果图.gif](https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/f4a160255d90402abdaed82be6ac8e65~tplv-k3u1fbpfcp-watermark.image)
 
 
-### 三、实现过程
+## 三、实现过程
 
 **富文本的基本使用**
 

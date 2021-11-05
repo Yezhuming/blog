@@ -1,7 +1,5 @@
 # 会点前端的汤姆
 
-> [antd 的步骤条样式调整](https://yezhuming.github.io/blog/#/antd%E7%9A%84%E6%AD%A5%E9%AA%A4%E6%9D%A1%E6%A0%B7%E5%BC%8F%E8%B0%83%E6%95%B4)
-
 > [react-beautiful-dnd 快速上手](https://yezhuming.github.io/blog/#/react-beautiful-dnd%E5%BF%AB%E9%80%9F%E4%B8%8A%E6%89%8B)
 
 > [React 导出表头合并的表格](https://yezhuming.github.io/blog/#/React%E5%AF%BC%E5%87%BA%E8%A1%A8%E5%A4%B4%E5%90%88%E5%B9%B6%E7%9A%84%E8%A1%A8%E6%A0%BC)

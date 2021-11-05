@@ -1,10 +1,12 @@
+# React导出表头合并的表格
+
 需求场景：将下图的包含表头合并的表格导出为excel保存到本地
 
 使用 [fe-export-excel](https://github.com/evantre/exportexcel#readme)，功能简单，满足现有的需求并且包的体积也不大。
 
 ![](https://files.mdnice.com/user/10344/74a16795-837b-4209-97c6-300825bd0b58.png)
 
-# 一、安装并引入
+## 一、安装并引入
 安装依赖并在需要使用的文件里引入
 ```js
 npm i fe-export-excel
@@ -12,7 +14,7 @@ npm i fe-export-excel
 import { exportexcel } from 'fe-export-excel';
 ```
 
-# 二、基本用法
+## 二、基本用法
 
 首先是定义一个工作表`worksheet`。
 
@@ -89,7 +91,7 @@ const worksheet = {
 exportexcel('测试', worksheet);
 ```
 
-# 三、导出表格效果图
+## 三、导出表格效果图
 
 ![](https://files.mdnice.com/user/10344/ce163c57-c791-46a4-bfce-b47012479d33.png)
 
