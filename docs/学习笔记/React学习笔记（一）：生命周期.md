@@ -186,7 +186,7 @@ componentDidUpdate(prevProps, prevState, valueFromSnapshot) {
  - componentWillMount
  - componentWillUpdate
  - componentWillReceiveProps
- 
+
 这三个生命周期方法都是在`render`阶段触发的，由于`render`阶段会重复被打断、重启这一过程，当一个任务被打断重启时会重新执行一遍任务，在这种情况下，这几个API都有可能会重复执行多次而导致严重的Bug。
  
 总结：React16生命周期的变化都是因为这几个方法不适用于新引入的Fiber架构。
