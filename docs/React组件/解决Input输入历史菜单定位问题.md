@@ -1,14 +1,16 @@
-### 一、问题描述
+# 解决Input输入历史菜单定位问题
+
+## 一、问题描述
 
 antd的`Input`输入框点击后回出现输入历史的菜单，此时滚动页面回出现定位问题。
 
-![](https://files.mdnice.com/user/10344/80468633-1730-4e2a-860f-a8bdc9a370c8.gif)
+![](https://static01.imgkr.com/temp/dd1a21720c714937938e59b63514acc6.gif)
 
-**注意**：当**滚动是在整个页面上进行时**浏览器会自动隐藏掉输入历史。
+**注意**：当**滚动是在整个页面上进行时**（注意滚动条的位置）浏览器会自动隐藏掉输入历史。
 
-![](https://files.mdnice.com/user/10344/8f3c62de-8218-44b7-a535-991a7fc447fa.gif)
+![](https://static01.imgkr.com/temp/9ca06135f31d432a835b1dc40a6d8a0c.gif)
 
-### 二、解决方法
+## 二、解决方法
 
 解决方法有两种，如下：
 
@@ -82,4 +84,4 @@ const App = () => {
 
 效果如下：
 
-![](https://files.mdnice.com/user/10344/44aac163-fc38-40ae-b53d-4308c70e160c.gif)
+![](https://static01.imgkr.com/temp/87868213047a41e9ac5c8daae3b4e2fc.gif)

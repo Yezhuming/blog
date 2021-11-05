@@ -6,7 +6,7 @@
 
 交互流程图如下：
 
-![](https://files.mdnice.com/user/10344/1f3d69b2-e532-436d-80c5-b0625c934d70.png)
+![](https://static01.imgkr.com/temp/9279ec8f1fb74e63806423d003296611.png)
 
 ## 二、最终效果
 
@@ -17,11 +17,11 @@
 
 ## 三、实现过程
 
-**富文本的基本使用**
+### 富文本的基本使用
 
 基于Antd的Form表单使用富文本可参考[官方Demo](https://braft.margox.cn/demos/antd-form)
 
-**动态新增删除富文本**
+### 动态新增删除富文本
  
 因为富文本组件是放在`Form`组件里，因此动态新增删除富文本相当于动态增减表单项（[Form.List](https://ant.design/components/form-cn/#components-form-demo-dynamic-form-items)），实现代码如下：
 
@@ -82,17 +82,17 @@
 </Form>
 ```
 
-![](https://files.mdnice.com/user/10344/4aa93eeb-e611-477a-a2ab-3596ea640f5e.png)
+![](https://static01.imgkr.com/temp/1b82e25c7ac84b4a8ab5ab2ff3baf773.png)
 
 左下角的新增模块按钮和右上角的删除按钮分别调用`Form.List`提供的`add`和`remove`方法即可实现表单的新增和删除。
 
-**展示富文本编辑的内容**
+### 展示富文本编辑的内容
 
-![](https://files.mdnice.com/user/10344/7aad419b-352c-4db9-be60-8895f6c5904d.png)
+![](https://static01.imgkr.com/temp/6e530074dd7e449ea27f0b511c5e3d32.png)
 
 当点击保存配置按钮时表单的`onFinish`会帮我们收集表单的数据并作为方法的第一个参数，打印出来可得到以下结果：
 
-![](https://files.mdnice.com/user/10344/61151bbf-5c8d-4b4d-a21d-5c2964364376.png)
+![](https://static01.imgkr.com/temp/271123fdcf784cbfbae72f7428c61f61.png)
  
 `moduleExtras`是`Form.List`的`name`属性，它保存着表单当前收集的数据，`content`就是富文本实例，要想得到编辑的内容还需要调用`editorState.toHTML()`获取`html`。
 
@@ -120,11 +120,11 @@ const handleSubmit = values => {
 
 `<p>    222    123</p>`
 
-![](https://files.mdnice.com/user/10344/197f70c0-d652-4742-ae3f-afe7a4e18b42.png)
+![](https://static01.imgkr.com/temp/72467c657a8f49bb97428897f0282a2a.png)
 
 解决方法是给展示的标签添加`white-space: pre`CSS属性即可。
 
-![](https://files.mdnice.com/user/10344/8bf02e4a-20e2-427e-9ddb-07fa28c7dd17.png)
+![](https://static01.imgkr.com/temp/dacfd23e6afb49fe863830c3f89b3000.png)
 
 而我展示`html`的方法是利用官方提供的`readOnly`属性将富文本设置成**只读模式**，并且清空工具栏，也能实现上图效果。
 
@@ -137,7 +137,7 @@ const handleSubmit = values => {
 />
 ```
 
-**给富文本添加上传图片功能**
+### 给富文本添加上传图片功能
 
 首先参考[官方上传图片Demo](https://braft.margox.cn/demos/antd-upload)的方法给富文本添加上传图片的控件。
 
@@ -198,7 +198,7 @@ const extendControls = field => [
 
 上传功能跟平常使用antd的`Upload`组件类似，需要注意的是将图片插入到富文本编辑器中需要调用`ContentUtils.insertMedias`方法，方法的第一个参数是富文本实例，所以在前面需要**通过表单获取上传图片对应的表单项下的富文本实例**来将图片插入到对应的富文本下。
 
-**添加校验功能**
+### 添加校验功能
 
 利用`isEmpty()`方法给富文本添加一个非空校验功能，实现代码如下：
 ```js
@@ -218,7 +218,7 @@ const extendControls = field => [
 >
 ```
 
-**给表单设置初始值**
+### 给表单设置初始值
 
 最后就是当页面上已添加了几个文本模块时，点击配置按钮后要将文本模块给转换成富文本编辑的模式。
 

@@ -4,7 +4,7 @@
 
 使用 [fe-export-excel](https://github.com/evantre/exportexcel#readme)，功能简单，满足现有的需求并且包的体积也不大。
 
-![](https://files.mdnice.com/user/10344/74a16795-837b-4209-97c6-300825bd0b58.png)
+![](https://static01.imgkr.com/temp/57ba6a66edd24dc09e46a9aefd1577ef.png)
 
 ## 一、安装并引入
 安装依赖并在需要使用的文件里引入
@@ -93,7 +93,7 @@ exportexcel('测试', worksheet);
 
 ## 三、导出表格效果图
 
-![](https://files.mdnice.com/user/10344/ce163c57-c791-46a4-bfce-b47012479d33.png)
+![](https://static01.imgkr.com/temp/97a658655a354f6d8db19abfb41866c2.png)
 
 至此，导出表格数据的功能就实现了，对这个插件感兴趣的可以自行查看更多的用法。
 
