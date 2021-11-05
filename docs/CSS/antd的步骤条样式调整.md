@@ -22,7 +22,7 @@
 
 ### 3.1 引入组件
 
-![](https://imgkr2.cn-bj.ufileos.com/3ae7d2db-f2df-4eb2-8136-a47f97da3ffe.png?UCloudPublicKey=TOKEN_8d8b72be-579a-4e83-bfd0-5f6ce1546f13&Signature=hbijSNq%252FdnZFiSAIW%252F7erPMu0CQ%253D&Expires=1612773642)
+![](https://static01.imgkr.com/temp/7ed410d1b9c54de691a36108d743bb36.png)
 
 直接从 antd 里引入 Steps 组件
 
