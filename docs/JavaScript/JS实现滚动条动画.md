@@ -1,4 +1,4 @@
-## 用原生JS实现滚动条滚动到指定位置 <!-- {docsify-ignore} -->
+## JS 实现滚动条滚动到指定位置 <!-- {docsify-ignore} -->
 
 ```js
 /**
@@ -18,10 +18,10 @@ scrollTo = (top, time) => {
   const scrollTimer = setInterval(() => {
     if (spacingIndex > 0) {
       spacingIndex -= 1;
-      this.scrollTo(nowTop += everTop);
+      this.scrollTo((nowTop += everTop));
     } else {
       clearInterval(scrollTimer);
     }
   }, spacingTime);
-}
+};
 ```
