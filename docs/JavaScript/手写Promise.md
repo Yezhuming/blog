@@ -47,16 +47,16 @@ class myPromise {
     }
   }
 
-  reject(error) {
+  reject(reason) {
     // 只能由pedning状态 => rejected状态 (避免调用多次resolve reject)
     if (this.PromiseState === myPromise.PENDING) {
       // 在事件循环末尾执行
       setTimeout(() => {
         this.PromiseState = myPromise.REJECTED;
-        this.PromiseResult = error;
+        this.PromiseResult = reason;
         // reject 时遍历数组并依次执行
         this.onRejectedCallbacks.forEach((callback) => {
-          callback(result);
+          callback(reason);
         });
       });
     }
@@ -281,7 +281,7 @@ class myPromise {
             /**
              * 如果迭代包含一个或多个非承诺值和/或已解决/拒绝的承诺，
              * 则 Promise.race 将解析为迭代中找到的第一个值。
-             * 执行第一个resolve或
+             * 执行第一个resolve或reject后忽略后续的值
              */
             myPromise.resolve(item).then(
               (value) => {
@@ -387,7 +387,6 @@ const resolvePromise = (promise2, x, resolve, reject) => {
          */
         if (called) return;
         called = true;
-
         /**
          * 2.3.3.3.4.2 否则以 e 为据因拒绝 promise
          */
@@ -403,24 +402,4 @@ const resolvePromise = (promise2, x, resolve, reject) => {
     resolve(x);
   }
 };
-
-// 测试代码
-const promise = new myPromise((resolve, reject) => {
-  resolve("success");
-});
-promise
-  .then((value) => {
-    console.log(1);
-    console.log("resolve", value);
-    return "then1";
-  })
-  .then((value) => {
-    console.log(2);
-    console.log("resolve", value);
-    return "then2";
-  })
-  .then((value) => {
-    console.log(3);
-    console.log("resolve", value);
-  });
 ```
