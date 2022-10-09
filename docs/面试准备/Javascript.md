@@ -1,134 +1,389 @@
 # JavaScript
 
-### 手写 call
+## 原型与原型链
+
+当一个对象查找方法和属性时会先从**自身**查找，如果找不到就会通过`__proto__`访问**被实例化的构造函数**的`prototype`，这个就是原型对象。除了最顶层的 Object 对象的`__proto__`为 null，其余对象都有`__proto__`指向上层原型对象，而**原型链**就是通过`__proto__`连接形成的。
+
+![原型链](../image/js%E5%8E%9F%E5%9E%8B%E9%93%BE.png)
+
+```js
+Array.a = 1;
+Array.prototype.a = 2;
+Function.prototype.a = 3;
+Object.prototype.a = 4;
+var arr = [];
+console.log(arr.a); // 2
+console.log(arr.length.a); // 4 arr.length为Number，往上查找到Object的prototype
+console.log(arr.forEach.a); // 3 arr.forEach为Function
+console.log(Function.a); // 3 Function.__proto__ === Function.prototype
+console.log(Object.a); // 3 Object.__proto__ === Function.prototype
+```
+
+## 箭头函数与普通函数有什么区别
+
+- 箭头函数没有自己的 `this`，在声明时继承上层作用域的 `this`，并且无法使用 `call`、`apply`、`bind` 改变 `this` 指向
+- 箭头函数没有 `prototype`
+- 箭头函数不能作为构造函数使用
+- 箭头函数没有 `arguments`
+
+## 判断数据类型的方式
+
+### typeof
+
+```js
+console.log(typeof 1); // number
+console.log(typeof "1"); // string
+console.log(typeof true); // boolean
+console.log(typeof undefined); // undefined
+console.log(typeof Symbol(1)); // symbol
+console.log(typeof []); // object
+console.log(typeof null); // object
+console.log(typeof function fn() {}); // function
+```
+
+总结：
+
+- `typeof` 可以准确判断除 `null` 之外的基本数据类型
+
+### instanceof
+
+`instanceof` 用于检测构造函数的 `prototype` 属性是否存在某个实例对象的原型链上
+
+```js
+console.log(123 instanceof Number); // false
+console.log("123" instanceof String); // false
+console.log(true instanceof Boolean); // false
+console.log(Symbol(123) instanceof Symbol); // false
+console.log([] instanceof Array); // true
+console.log({} instanceof Object); // true
+console.log(function () {} instanceof Function); // true
+console.log(undefined instanceof undefined); // TypeError: Right-hand side of 'instanceof' is not an object
+console.log(null instanceof null); // TypeError: Right-hand side of 'instanceof' is not an object
+console.log(new Date() instanceof Date); // true
+console.log(/\d/g instanceof RegExp); // true
+console.log(new Error() instanceof Error); // true
+```
+
+总结：
+
+- 不能检测基本数据类型，因为基本数据类型并不是构造函数的实例，没有原型链
+- 因为原型链的终点都是 `Object.prototype`，所以 `instanceof Object` 始终为 `true`
+- 原型链可以被修改，结果不一定准确
+
+### constructor
+
+用于判断操作值是否是指定构造函数的实例
+
+```js
+console.log((123).constructor); // Number
+console.log("123".constructor); // String
+console.log(true.constructor); // Boolean
+console.log(Symbol(123).constructor); // Symbol
+console.log([].constructor); // Array
+console.log({}.constructor); // Object
+console.log(function () {}.constructor); // Function
+console.log(undefined.constructor); // TypeError: Cannot read properties of undefined (reading 'constructor')
+console.log(null.constructor); // TypeError: Cannot read properties of null (reading 'constructor')
+console.log(new Date().constructor); // Date
+console.log(/\d/g.constructor); // RegExp
+console.log(new Error().constructor); // Error
+```
+
+总结：
+
+- 可以判断除 `null` 和 `undefined` 之外的所有数据类型
+- 基本数据类型在获取 `constructor` 时会自动将其转为包装对象实例，并在使用后立即销毁
+- `constructor` 可以被修改，结果不一定准确
+
+### Object.prototype.toString
+
+返回对象的类型字符串
+
+```js
+console.log(Object.prototype.toString.call(123)); // '[object Number]'
+console.log(Object.prototype.toString.call("123")); // '[object String]'
+console.log(Object.prototype.toString.call(true)); // '[object Boolean]'
+console.log(Object.prototype.toString.call(Symbol(123))); // '[object Symbol]'
+console.log(Object.prototype.toString.call([])); // '[object Array]'
+console.log(Object.prototype.toString.call({})); // '[object Object]'
+console.log(Object.prototype.toString.call(function () {})); // '[object Function]'
+console.log(Object.prototype.toString.call(undefined)); // '[object Undefined]'
+console.log(Object.prototype.toString.call(null)); // '[object Null]'
+console.log(Object.prototype.toString.call(new Date())); // '[object Date]'
+console.log(Object.prototype.toString.call(/\d/g)); // '[object RegExp]'
+console.log(Object.prototype.toString.call(new Error())); // '[object Error]'
+```
+
+总结：可以准确判断所有数据类型
+
+## 为什么 0.1+0.2!==0.3
+
+因为浮点数值的最高精度是 17 位小数，在有限的精度内无法准确取到 0.1 和 0.2 的二进制数，因此两个有误差的数相加不等于 0.3
+
+解决方法
+
+1. 将小数转换成整数
+
+```js
+function add(num1, num2) {
+  // 转换成字符串，得到小数部分的长度
+  const Decimal1 = (num1.toString().split(".")[1] || "").length;
+  const Decimal2 = (num2.toString().split(".")[1] || "").length;
+  // 取两个数字的最大值
+  const baseNum = Math.pow(10, Math.max(Decimal1, Decimal2));
+  return (num1 * baseNum + num2 * baseNum) / baseNum;
+}
+// add(0.1, 0.2) === 0.3
+// 相当于
+(0.1 * 10 + 0.2 * 10) / 10 === 0.3; // true
+```
+
+## 设计模式（TODO）
+
+- 单一功能原则：函数内只实现单一的功能
+- 开放封闭原则：对**拓展**开放，对**修改**封闭
+
+### 工厂模式（简单工厂）
+
+将创建对象的过程单独封装。
+
+```js
+function User(name , age, career, work) {
+  this.name = name
+  this.age = age
+  this.career = career
+  this.work = work
+}
+
+function Factory(name, age, career) {
+  let work
+  switch(career) {
+    case 'coder':
+      work =  ['写代码','写系分', '修Bug']
+      break
+    case 'product manager':
+      work = ['订会议室', '写PRD', '催更']
+      break
+    case 'boss':
+      work = ['喝茶', '看报', '见客户']
+    case 'xxx':
+      // 其它工种的职责分配
+      ...
+
+  return new User(name, age, career, work)
+}
+```
+
+### 工厂模式（抽象工厂）
+
+围绕一个超级工厂创建其他工厂。
+
+四个关键角色：
+
+- 抽象工厂：抽象类，不能被用于生成具体实例
+- 具体工厂：继承自抽象工厂，实现抽象工厂里的实例方法，用于生成具体产品的类
+- 抽象产品：抽象类，不能被用于生成具体实例
+- 具体产品：继承自抽象产品
+
+### 单例模式
+
+保证一个类仅有一个实例，并提供一个全局访问点。
+
+使用场景：
+
+- Redux：一个全局的 Store 用于存储应用的所有状态
+- Storage：基于 localStorage 的实例
+- Modal：全局的模态框
+
+### 原型模式
+
+在原型模式下，当我们要创建一个对象时，会先找到一个对象作为原型，然后通过克隆原型的方式来创建出一个与原型一样（共享一套数据/方法）的对象。`Object.create` 方法就是原型模式的天然实现
+
+### 装饰器模式
+
+在不改变源对象的基础上，通过对其进行包装拓展，使原有对象能满足更复杂的需求。
+
+用法：
+
+1. 给一个类添加装饰器
+
+```js
+function classDecorator(target) {
+  target.hasDecorator = true;
+  return target;
+}
+
+// 将装饰器“安装”到Button类上
+@classDecorator
+class Button {
+  // Button类的相关逻辑
+}
+```
+
+2. 给方法添加装饰器
 
 ```js
 /**
- * 1.如果传入的是值类型 会返回对应类型的构造函数创建的实例
- * 2.如果传入的是对象 返回对象本身
- * 3.如果传入 undefined 或者 null 会返回空对象
- */
-Function.prototype._call = function (ctx, ...args) {
-  // 判断上下文类型 如果是undefined或者 null 指向window
-  // 否则使用 Object() 将上下文包装成对象
-  const o = ctx == undefined ? window : Object(ctx);
-  // 把函数foo的this 指向 ctx这个上下文
-  // 把函数foo赋值给对象o的一个属性  用这个对象o去调用foo(o.foo())  this就指向了这个对象o
-  // 下面的this就是调用_call的函数(foo)  我们把this给对象o的属性fn 就是把函数foo赋值给了o.fn
-  // 给context新增一个独一无二的属性以免覆盖原有属性
-  const fn = Symbol();
-  o[fn] = this; // this即调用call的函数
-  // 立即执行一次
-  const result = o[fn](...args);
-  // 删除这个属性
-  delete o[fn];
-  // 把函数的返回值赋值给_call的返回值
-  return result;
-};
-```
+ * target 类的原型对象，在此处为Button.prototype
+ * name 修饰的目标属性属性名
+ * descriptor 属性描述对象，专门用来描述对象的属性，它由各种各样的属性描述符组成，这些描述符又分为数据描述符（value、writable、enumerable和configurable）和存取描述符（get、set）
+ **/
 
-### 手写 apply
-
-```js
-// 只需要把第二个参数改成数组形式就可以了。
-Function.prototype._apply = function (ctx, array = []) {
-  const o = ctx == undefined ? window : Object(ctx);
-  const key = Symbol();
-  o[key] = this;
-  const result = o[key](...array);
-  delete o[key];
-  return result;
-};
-```
-
-### 手写 bind
-
-```js
-Function.prototype.myBind = function (context, ...args) {
-  if (!context || context === null) {
-    context = window;
-  }
-  // 创造唯一的key值  作为我们构造的context内部方法名
-  const fn = Symbol();
-  const _this = this;
-  //  bind情况要复杂一点
-  const newFn = function (...innerArgs) {
-    // 第一种情况 :若是将 bind 绑定之后的函数当作构造函数
-    // 通过 new 操作符使用，则不绑定传入的 this，而是将 this 指向实例化出来的对象
-    // this.__proto__ === newFn.prototype
-    if (this instanceof newFn === true) {
-      // 此时this指向指向用newFn创建的实例  这时候不需要改变this指向
-      this[fn] = _this;
-      this[fn](...[...args, ...innerArgs]); //这里使用es6的方法让bind支持参数合并
-      delete this[fn];
-    } else {
-      // 如果只是作为普通函数调用  那就很简单了 直接改变this指向为传入的context
-      // 相当于context.fn(),此时fn中的this指向context
-      context[fn] = _this;
-      context[fn](...[...args, ...innerArgs]);
-      delete context[fn];
-    }
+function funcDecorator(target, name, descriptor) {
+  let originalMethod = descriptor.value;
+  descriptor.value = function () {
+    console.log("我是Func的装饰器逻辑");
+    return originalMethod.apply(this, arguments);
   };
-  // 如果绑定的是构造函数 那么需要继承构造函数原型属性和方法
-  newFn.prototype = Object.create(this.prototype);
-  return newFn;
-};
+  return descriptor;
+}
 
-//用法如下
-// function Person(name, age) {
-//   console.log(name); // '我是参数传进来的name'
-//   console.log(age); // '我是参数传进来的age'
-//   console.log(this); // 构造函数this指向实例对象
-// }
-// // 构造函数原型的方法
-// Person.prototype.say = function() {
-//   console.log(123);
-// }
-// let obj = {
-//   objName: '我是obj传进来的name',
-//   objAge: '我是obj传进来的age'
-// }
-
-// 作为构造函数调用
-// let bindFun = Person.myBind(obj, '我是参数传进来的name')
-// let a = new bindFun('我是参数传进来的age')
-// a.say() //123
-// let b = new bindFun('bbb');
-// b.say();
-
-// 普通函数
-// function normalFun(name, age) {
-//   console.log(name);   // '我是参数传进来的name'
-//   console.log(age);   // '我是参数传进来的age'
-//   console.log(this); // 普通函数this指向绑定bind的第一个参数 也就是例子中的obj
-//   console.log(this.objName); // '我是obj传进来的name'
-//   console.log(this.objAge); // '我是obj传进来的age'
-// }
-// let bindFun = normalFun.myBind(obj, '我是参数传进来的name')
-// bindFun('我是参数传进来的age');
-// bindFun('我是参数传进来的age111');
+class Button {
+  @funcDecorator
+  onClick() {
+    console.log("我是Func的原有逻辑");
+  }
+}
 ```
 
-### 手写 new
+使用场景：
 
-```js
-const _new = (fn, ...args) => {
-  // 1.创建空对象并继承构造函数原型属性和方法
-  // 相当于：
-  // const obj = {};
-  // obj._proto_ = fn.prototype;
-  const obj = Object.create(fn.prototype);
-  // 2.将构造函数的this指向生成的对象
-  const res = fn.call(obj, ...args);
-  // 3.判断res类型并返回
-  // 六种基本类型：null undefined string number symbol boolean 返回生成的对象
-  // {}, function(){}, new Date(), [], new Error(), /a/ 返回构造函数显式return的值
-  if (res && (typeof res === "object" || typeof res === "function")) return res;
+- HOC：拓展组件功能
+- Redux：connect 方法
 
-  return obj;
-};
-```
+### 观察者模式
 
-### 手写 Promise
+定义了一种一对多的依赖关系，让多个观察者同时监听同一个目标对象，当这个目标对象的状态发生变化时，会通知所有观察者对象，使它们能够自动更新。
 
-- [手写 Promise](JavaScript/手写Promise.md)
+使用场景：
+
+- EventEmitter
+
+**与发布-订阅模式的区别**
+
+发布-订阅模式下发布者不直接触及到订阅者、而是由统一的第三方来完成实际通信的操作；而观察者模式下，被观察者需要维护一套观察者的集合，并实现统一的方法供观察者调用。
+
+## 闭包
+
+内部函数总是可以访问外部函数的变量，当通过调用一个外部函数返回一个内部函数后，即使外部函数已经执行结束，但是内部函数引用外部函数的变量始终保存在内存中，这些变量的集合称为闭包。
+
+## 内存机制
+
+在 `Javascript` 的执行过程中，主要有三种内存空间，分别是代码空间、栈空间和堆空间。
+
+- 代码空间：用来存放可执行代码。
+- 栈空间：一块连续的内存区域，容量较小，读取速度快。
+- 堆空间：不连续的内存区域，容量较大，用于储存大数据，读取速度慢。
+
+### 栈空间
+
+栈空间其实就是 `Javascript` 中的调用栈，用来储存执行上下文，以及储存执行上下文中的一些基本类型中的小数据，如下图所示：
+
+![栈空间](../image/%E6%A0%88%E7%A9%BA%E9%97%B4.png)
+
+- 变量环境：存放 `var` 声明与函数声明的变量空间，编译时就能确定，不受块级作用域影响。
+- 词法环境：存放 `let` 与 `const` 声明的变量空间，编译时不能完全确定，受块级作用域影响。
+
+### 堆空间
+
+用来储存大数据如引用类型，然后把它们的引用地址保存到栈空间的变量中，由于多了这一道中转，`Javascript` 对堆空间的读取自然会比栈空间数据要慢，两者关系如下图所示：
+
+![堆空间](../image/%E5%A0%86%E7%A9%BA%E9%97%B4.png)
+
+### 堆栈存放的数据类型
+
+**少部分原始类型的数据存放在栈中，引用类型的数据存放在堆中**。
+
+栈空间中的基本类型储存位置如下：
+
+类型 | 储存位置
+
+| 类型      | 储存位置                                                    |
+| --------- | ----------------------------------------------------------- |
+| Number    | smi(-2³¹ 到 2³¹-1 的整数) 储存在栈中，heapNumber 储存在堆中 |
+| String    | 堆                                                          |
+| Boolean   | 堆                                                          |
+| Null      | 堆                                                          |
+| Undefined | 堆                                                          |
+| BigInit   | 堆                                                          |
+| Symbol    | 堆                                                          |
+
+## 垃圾回收
+
+### 垃圾回收策略
+
+#### 标记清除算法（大多数浏览器在使用）
+
+标记清除算法分为**标记**和**清除**两个阶段，标记阶段即为所有活动对象做上标记，清除阶段则把没有标记的（即非活动对象）销毁。
+
+引擎在执行标记清除算法时，需要从出发点去遍历内存中所有对象去打标记，而这个出发点有很多，称之为**根对象**，其实就是浏览器环境中的**全局 Window 对象**、**文档 DOM 对象**等。
+
+**优点**
+
+实现简单，一位二进制位即可标记
+
+**缺点**
+
+- 内存碎片化：清除之后剩余对象的内存位置是不变的，导致空闲内存空间不连续。
+- 分配速度慢
+
+**优化**
+
+采用标记整理算法，在标记后将活动对象移至内存的一端，再清除非活动对象，这样空闲内存就是连续的。
+
+#### 引用计数法
+
+该策略是跟踪记录每个变量值被引用的次数，当这个值的引用次数为 0 时，说明这个值没有被引用，立即回收对应的内存空间。
+
+**优点**
+
+垃圾产生的时候会立刻回收，不需要像标记清除每隔一段时间进行一次。
+
+**缺点**
+
+- 计数器：计数器需要的内存无法估计，因为不知道被引用数量的上限。
+- 循环引用：循环引用的变量值无法回收。
+
+### V8 引擎的优化
+
+#### 分代式垃圾回收
+
+V8 的垃圾回收策略主要基于分代式垃圾回收机制，V8 将堆内存分为**新生代**和**老生代**两个区域，采用不同的垃圾回收策略。
+
+**新生代**
+
+新生代的对象为存活时间较短的对象，通常只支持 `1~8M` 的容量。
+
+新生代垃圾回收策略通过将堆内存一分为二，一个是处于使用状态的空间称为**活动区**，一个是处于闲置状态的空间称为**空闲区**。
+
+新加入的对象都会加入活动区，当活动区快写满时就要执行一次垃圾回收，垃圾回收流程大致如下：
+
+1. 新生代垃圾回收器会对活动区的活动对象做标记
+2. 将标记对象复制到空闲区进行排序整理
+3. 清除活动区所有对象占用的空间
+4. 角色互换，将原来的活动区变成空闲区，原来的空闲区变成活动区
+
+注意：当一个对象经过**多次复制**后仍然存活，它将会被认为是生命周期较长的对象，随后会被移至老生代的空间中，采用老生代的垃圾回收策略管理。
+
+**老生代**
+
+老生代的对象为存活时间较长或常驻内存的对象，简单来说就是经历过新生代垃圾回收后还存活的对象，容量通常比较大。
+
+老生代垃圾回收器采用的策略就是**标记清除**，流程如下：
+
+1. 首先是标记阶段，从一组根元素开始，递归遍历这组根元素，遍历过程中给能到达的元素（活动对象）打上标记，无法到达的元素就是非活动对象。
+2. 然后是清除阶段，直接销毁非活动对象，回收对应空间并标记整理内存。
+
+参考资料：
+
+- [「硬核 JS」你真的了解垃圾回收机制吗](https://juejin.cn/post/6981588276356317214)
+
+### 栈空间回收
+
+调用栈中有一个记录当前执行状态的指针，随着函数的执行，函数执行上下文会被压入调用栈中，执行上下文中的数据会被分配到堆栈中，指针指向最后压入栈的执行上下文。
+
+当函数执行结束后，指针下移，这个指针下移的操作就是销毁上一个函数执行上下文的过程，该函数执行上下文所占用的区域会变成无效区域，下一个函数执行上下文压入栈的时候会直接覆盖其内存空间。
+
+简而言之，**只要函数调用结束，该栈内存就会自动回收，如果出现闭包的情况，闭包的数据会组成一个对象存在堆空间中**。
+
+### 堆空间回收
