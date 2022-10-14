@@ -1,12 +1,12 @@
 # React 面试题
 
-## 事件机制（TODO）
+## 事件机制
 
 ### React16
 
 #### 合成事件
 
-绑定的事件`onClick`并不是原生事件，而是由原生事件合成的`React`事件，例如 `click` 合成为 `onClick`，`blur`、`change`、`input`、`keydown`、`keyup` 合成为 onChange。
+绑定的事件`onClick`并不是原生事件，而是由原生事件合成的`React`事件，例如 `click` 合成为 `onClick`，`blur`、`change`、`input`、`keydown`、`keyup` 合成为 `onChange`。
 
 #### 事件注册
 
@@ -22,6 +22,19 @@
 2. 生成合成事件源对象（保存了整个事件的信息）
 3. 声明事件执行队列，按照冒泡和捕获的逻辑，从目标元素往上收集事件，将对应事件放到队列的头部和尾部
 4. 执行事件队列，如果发现阻止冒泡，那么`break`跳出循环，最后重置事件源，放回到事件池中
+
+**事件池**
+
+```js
+handerClick = (e) => {
+  console.log(e.target); // button
+  setTimeout(() => {
+    console.log(e.target); // null
+  }, 0);
+};
+```
+
+事件池其实就是存放事件源对象的地方，每次我们用的事件源对象，在事件函数执行之后都会被释放到事件池中，这样的好处是不用每次都创建事件源对象，可以从事件池中直接取出事件源对象直接进行复用，在事件处理函数执行完毕后，会释放事件源到事件池中，因此在 `setTimeout` 中打印出来的是 `null`。
 
 #### 总结：
 
@@ -41,11 +54,11 @@
 
 ## 高阶组件
 
-高阶组件是参数为组件，返回值为新组件的函数。
+高阶组件是**参数为组件，返回值为新组件**的函数。
 
 ### 设计初衷
 
-- **复用逻辑**：批量对原有组件进行加工、包装处理，根据业务需求定制化 HOC，解决复用逻辑
+- **复用逻辑**：批量对原有组件进行加工、包装处理，根据业务需求定制化 HOC，解决复用逻辑。
 - **强化 props**：劫持上一层传过来的`props`，然后混入新的`props`，增强组件的功能。代表作`react-router`中的`withRouter`。
 - **赋能组件**：提供一些额外的拓展功能，例如额外的生命周期、额外的事件。
 - **控制渲染**：对原来的组件渲染实现条件控制、懒加载等功能。
@@ -54,7 +67,7 @@
 
 #### 正向属性代理
 
-用代理组件包裹源组件，在代理组件上对源组件进行代理操作，可以理解为父子组件关系。
+用代理组件包裹源组件，在代理组件上对源组件进行代理操作，可以理解为**父子组件关系**。
 
 ```js
 function HOC(WrapComponent) {
@@ -69,13 +82,13 @@ function HOC(WrapComponent) {
 }
 ```
 
-**优点**
+##### 优点
 
-- 和业务组件低耦合，零耦合，对于`控制渲染`和`强化 props`，只负责控制业务组件渲染和传递额外的 `props` 即可，无需知道业务组件的实际内容。
+- 和业务组件低耦合，零耦合，对于`控制渲染`和强化`props`，只负责控制业务组件渲染和传递额外的 `props` 即可，无需知道业务组件的实际内容。
 - 适用于 `class` 组件和函数组件
 - 可以嵌套使用
 
-**缺点**
+##### 缺点
 
 - 无法直接获取业务组件的状态，只能通过`ref`获取组件实例
 - 无法直接继承静态属性
@@ -100,7 +113,7 @@ export default HOC(Index);
 
 **优点**
 
-- 方便获取业务组件内部状态。
+- 方便获取业务组件内部状态，比如 `state`、`props` 和绑定的事件函数等。
 - es6 继承可以直接继承静态属性。
 
 **缺点**
@@ -118,6 +131,10 @@ export default HOC(Index);
 ## setState 是异步还是同步
 
 `setState` 并不是单纯的同步或异步，它的表现会因调用场景不同而不同，在生命周期或者合成事件中表现为异步(批量合并更新)，而在 `setTimeout`、`setInterval` 等函数中，包括在 DOM 原生事件中，它都表现为同步。
+
+参考资料：
+
+- [11 | setState 到底是同步的，还是异步的？](https://kaiwu.lagou.com/course/courseInfo.htm?courseId=510#/detail/pc?id=4860)
 
 ## hooks
 
@@ -137,7 +154,7 @@ hooks 是一套能够是函数组件更强大、更灵活的“钩子”。
 
 **首次渲染**
 
-初始化 hooks 时将所有 hook 的相关信息收集在一个对象中里，对象之间以单向链表的形式相互串联。
+初始化 `hook` 时将所有 `hook` 的相关信息收集在一个对象中里，对象之间以**单向链表**的形式相互串联。
 
 **非首次渲染**
 
@@ -152,19 +169,19 @@ hooks 是一套能够是函数组件更强大、更灵活的“钩子”。
 ### react-router-dom、react-router 和 history 三者的关系
 
 - `history`是`react-router`的核心，集成了`pushState`、`popState`等底层路由方法。
-- `react-router`是`react-router-dom`的核心，封装了`Router`、`Switch`和`Route`等组件，实现了监听路由更新组件的核心功能。
+- `react-router`是`react-router-dom`的核心，封装了`Router`、`Switch`和`Route`等组件，实现监听路由更新组件的核心功能。
 - `react-router-dom`在`react-router`的基础上，封装了`Link`、`BrowserRouter`和`HashRouter`等组件。
 
 ### history 库
 
-单页面应用路由实现的原理：切换 url，监听 url 的变化，渲染与 url 匹配的组件。
+单页面应用路由实现的原理：切换 `url`，监听 `url` 的变化，渲染与 `url` 匹配的组件。
 
 #### history 模式
 
 **切换 url**
 
-- history.pushState(state,title,path)
-- history.replaceState(state,title,path)
+- `history.pushState(state,title,path)`
+- `history.replaceState(state,title,path)`
 
 **监听 url**
 
@@ -177,15 +194,17 @@ window.addEventListener("popstate", function (e) {
 });
 ```
 
-注意：`history.pushState`和`history.replaceState`不会触发`popState`事件，`popState`事件只会在浏览器某些行为下触发，例如点击后退前进按钮，或者调用`history.back`、`history.go`方法也会触发。即，同一文档的不同历史记录之间导航会触发该事件。
+注意：`history.pushState`和`history.replaceState`不会触发`popState`事件，`popState`事件只会在浏览器某些行为下触发，例如点击后退前进按钮，或者调用`history.back`、`history.go`方法也会触发。即**同一文档的不同历史记录之间导航会触发该事件**。
 
 #### hash 模式
 
 **切换 url**
-`window.location.hash`
-通过`window.location.hash`获取或设置`hash`值。
+
+- `window.location.hash`
+- `window.location.replace`
 
 **监听 url**
+
 `onhashchange`
 
 ```js

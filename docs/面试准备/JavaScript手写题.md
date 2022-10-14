@@ -1,5 +1,7 @@
 # JavaScript 手写题
 
+## call、apply 和 bind
+
 ### 手写 call
 
 ```js
@@ -8,20 +10,19 @@
  * 2.如果传入的是对象 返回对象本身
  * 3.如果传入 undefined 或者 null 会返回空对象
  */
-Function.prototype._call = function (ctx, ...args) {
-  // 判断上下文类型 如果是undefined或者 null 指向window
-  // 否则使用 Object() 将上下文包装成对象
-  const o = ctx == undefined ? window : Object(ctx);
+Function.prototype._call = function (context, ...args) {
+  // 判断传进来的上下文类型，如果是undefined或者 null 指向window
+  // 否则使用 Object() 将上下文包装成对象，否则context为基本类型时会报错
+  const ctx = context == undefined ? window : Object(context);
   // 把函数foo的this 指向 ctx这个上下文
-  // 把函数foo赋值给对象o的一个属性  用这个对象o去调用foo(o.foo())  this就指向了这个对象o
-  // 下面的this就是调用_call的函数(foo)  我们把this给对象o的属性fn 就是把函数foo赋值给了o.fn
-  // 给context新增一个独一无二的属性以免覆盖原有属性
+  // 把函数foo赋值给对象ctx的一个属性  用这个对象ctx去调用foo(ctx.foo())，foo中的this就指向了这个对象ctx
+  // 给ctx新增一个独一无二的属性以免覆盖原有属性
   const fn = Symbol();
-  o[fn] = this; // this即调用call的函数
+  ctx[fn] = this; // this即调用call的函数
   // 立即执行一次
-  const result = o[fn](...args);
+  const result = ctx[fn](...args);
   // 删除这个属性
-  delete o[fn];
+  delete ctx[fn];
   // 把函数的返回值赋值给_call的返回值
   return result;
 };
@@ -31,12 +32,12 @@ Function.prototype._call = function (ctx, ...args) {
 
 ```js
 // 只需要把第二个参数改成数组形式就可以了。
-Function.prototype._apply = function (ctx, array = []) {
-  const o = ctx == undefined ? window : Object(ctx);
+Function.prototype._apply = function (context, array = []) {
+  const ctx = context == undefined ? window : Object(context);
   const key = Symbol();
-  o[key] = this;
-  const result = o[key](...array);
-  delete o[key];
+  ctx[key] = this;
+  const result = ctx[key](...array);
+  delete ctx[key];
   return result;
 };
 ```
@@ -45,28 +46,27 @@ Function.prototype._apply = function (ctx, array = []) {
 
 ```js
 Function.prototype.myBind = function (context, ...args) {
-  if (!context || context === null) {
-    context = window;
-  }
+  const ctx = context == undefined ? window : Object(context);
   // 创造唯一的key值  作为我们构造的context内部方法名
   const fn = Symbol();
+  // 这里this为调用bind的函数
   const _this = this;
   //  bind情况要复杂一点
   const newFn = function (...innerArgs) {
     // 第一种情况 :若是将 bind 绑定之后的函数当作构造函数
     // 通过 new 操作符使用，则不绑定传入的 this，而是将 this 指向实例化出来的对象
     // this.__proto__ === newFn.prototype
-    if (this instanceof newFn === true) {
+    if (this instanceof newFn) {
       // 此时this指向指向用newFn创建的实例  这时候不需要改变this指向
       this[fn] = _this;
-      this[fn](...[...args, ...innerArgs]); //这里使用es6的方法让bind支持参数合并
+      this[fn](...args, ...innerArgs);
       delete this[fn];
     } else {
-      // 如果只是作为普通函数调用  那就很简单了 直接改变this指向为传入的context
+      // 第二种情况：作为普通函数调用，直接改变this指向为传入的context
       // 相当于context.fn(),此时fn中的this指向context
-      context[fn] = _this;
-      context[fn](...[...args, ...innerArgs]);
-      delete context[fn];
+      ctx[fn] = _this;
+      ctx[fn](...args, ...innerArgs);
+      delete ctx[fn];
     }
   };
   // 如果绑定的是构造函数 那么需要继承构造函数原型属性和方法
@@ -74,7 +74,7 @@ Function.prototype.myBind = function (context, ...args) {
   return newFn;
 };
 
-//用法如下
+// 用法如下
 // function Person(name, age) {
 //   console.log(name); // '我是参数传进来的name'
 //   console.log(age); // '我是参数传进来的age'
@@ -109,7 +109,11 @@ Function.prototype.myBind = function (context, ...args) {
 // bindFun('我是参数传进来的age111');
 ```
 
-### 手写 new
+参考资料
+
+- [【面试题解】你了解 call，apply，bind 吗？那你可以手写一个吗？](https://juejin.cn/post/7030759884542967821)
+
+## 手写 new
 
 ```js
 const _new = (fn, ...args) => {
@@ -129,35 +133,48 @@ const _new = (fn, ...args) => {
 };
 ```
 
-### 手写 Promise
+## 手写 Promise
 
-- [手写 Promise](JavaScript/手写Promise.md)
+- [手写 Promise](../JavaScript/手写Promise.md)
 
-### 防抖
+## 防抖
 
 ```js
-const debounce = (fn, delay = 1000) => {
+/**
+ * @param {Function} fn 回调函数
+ * @param {*} delay 延迟事件
+ * @param {*} leading 是否延迟开始前调用函数
+ * @param {*} trailing 是否延迟开始后调用函数
+ */
+const debounce = (fn, delay = 1000, leading = false, trailing = true) => {
   let timer = null;
-  return function () {
+  let isInvoke = false;
+  return function (...args) {
     if (timer) clearTimeout(timer);
-    timer = setTimeout(() => {
-      fn.apply(this, arguments);
-    }, delay);
+    if (leading && !isInvoke) {
+      fn.call(this, ...args);
+      isInvoke = true;
+    } else {
+      timer = setTimeout(() => {
+        if (trailing) fn.call(this, ...args);
+        isInvoke = false;
+      }, delay);
+    }
   };
 };
 ```
 
-### 节流
+## 节流
 
 #### 时间戳
 
 ```js
 const throttle = (fn, delay) => {
   let start = Date.now();
-  return function () {
+  return function (...args) {
     let end = Date.now();
     if (end - start >= delay) {
-      fn.apply(this, arguments);
+      fn.call(this, ...args);
       // 执行一次后重新计算start
       start = Date.now();
     }
@@ -170,10 +187,10 @@ const throttle = (fn, delay) => {
 ```js
 const throttle = (fn, delay) => {
   let timer = null;
-  return function () {
+  return function (...args) {
     if (!timer) {
       timer = setTimeout(() => {
-        fn.apply(this, arguments);
+        fn.call(this, ...args);
         timer = null;
       }, delay);
     }
@@ -181,7 +198,7 @@ const throttle = (fn, delay) => {
 };
 ```
 
-### 实现有并行限制的 Promise 调度器
+## 实现有并行限制的 Promise 调度器
 
 ```js
 class Scheduler {
@@ -227,12 +244,12 @@ class Scheduler {
 }
 ```
 
-### 深克隆
+## 深克隆
 
 ```js
 const isObject = (val) => val && typeof val === "object";
 
-const deepClone = (obj, hash = new weekMap()) => {
+const deepClone = (obj, hash = new WeakMap()) => {
   // 非对象直接返回值
   if (!isObject(obj)) return obj;
   // 解决循环引用  当obj为源对象，那么在第一次调用函数时就将obj,target设置到hash中，这里直接返回target即可
@@ -240,8 +257,9 @@ const deepClone = (obj, hash = new weekMap()) => {
   // 区分数组和对象
   const target = Array.isArray(obj) ? [] : {};
   hash.set(obj, target);
+  // Reflect.ownKeys 的返回值等同于Object.getOwnPropertyNames加上Object.getOwnPropertySymbols的结果
   Reflect.ownKeys(obj).forEach((item) => {
-    if (isObject(obj)) {
+    if (isObject(item)) {
       target[item] = deepClone(obj[item], hash);
     } else {
       target[item] = obj[item];
@@ -252,7 +270,7 @@ const deepClone = (obj, hash = new weekMap()) => {
 };
 ```
 
-### 虚拟 DOM 转真实 DOM（render）
+## 虚拟 DOM 转真实 DOM（render）
 
 ```js
 const _render = (vnode) => {
@@ -278,7 +296,7 @@ const _render = (vnode) => {
 };
 ```
 
-### 发布订阅模式
+## 发布订阅模式
 
 ```js
 class EventEmitter {
