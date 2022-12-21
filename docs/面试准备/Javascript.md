@@ -2,7 +2,7 @@
 
 ## 原型与原型链
 
-当一个对象查找方法和属性时会先从**自身**查找，如果找不到就会通过`__proto__`访问**被实例化的构造函数**的`prototype`，这个就是原型对象。除了最顶层的 Object 对象的`__proto__`为 null，其余对象都有`__proto__`指向上层原型对象，而**原型链**就是通过`__proto__`连接形成的。
+当一个对象查找方法和属性时会先从**自身**查找，如果找不到就会通过`__proto__`访问**被实例化的构造函数**的`prototype`，这个就是**原型对象**。除了最顶层的 `Object` 原型对象的`__proto__`为 null，其余对象都有`__proto__`指向上层原型对象，而**原型链**就是通过`__proto__`连接形成的。
 
 ![原型链](../image/js%E5%8E%9F%E5%9E%8B%E9%93%BE.png)
 
@@ -257,7 +257,7 @@ class Button {
 
 使用场景：
 
-- EventEmitter
+- Vue 双向数据绑定
 
 **与发布-订阅模式的区别**
 
@@ -383,3 +383,105 @@ class Button {
 参考资料：
 
 - [「硬核 JS」你真的了解垃圾回收机制吗](https://juejin.cn/post/6981588276356317214)
+
+## ES6
+
+### for...in 和 for...of 的区别
+
+`for...in`：
+
+- 主要为遍历对象设计的，不适合遍历数组
+- 遍历对象返回 `key` 值
+- 遍历数组返回 index
+
+`for...of`：
+
+- 仅可遍历具备 `Iterator` 接口的数据结构（Array,Map,Set,String）
+- 遍历对象会报错
+- 遍历数组返回值
+- 遍历 `Set` 返回值
+- 遍历 `Map` 返回数组（`[key, value]`）
+
+```js
+const obj = {
+  id: "a",
+  name: "b",
+  age: 32,
+};
+
+const arr = ["a", "b", "c"];
+
+for (const key in obj) {
+  console.log(key); // id name age
+}
+for (const key in arr) {
+  console.log(key); // 0 1 2
+}
+for (const iterator of obj) {
+  console.log(iterator); // Uncaught TypeError: obj is not iterable
+}
+for (const iterator of arr) {
+  console.log(iterator); // a b c
+}
+
+var engines = new Set(["Gecko", "Trident", "Webkit", "Webkit"]);
+for (var e of engines) {
+  console.log(e); // Gecko Trident Webkit
+}
+
+var es6 = new Map();
+es6.set("edition", 6);
+es6.set("committee", "TC39");
+es6.set("standard", "ECMA-262");
+for (var [name, value] of es6) {
+  console.log(name + ": " + value);
+}
+// edition: 6
+// committee: TC39
+// standard: ECMA-262
+```
+
+### Set 和 Map
+
+##### Set
+
+- Set 类似于数组，但是成员值是唯一的
+- 两个属性：constructor,size
+- 四个操作方法：add,delete,has,clear
+- 四个遍历方法：keys,values,entries,forEach
+
+##### WeakSet
+
+- 成员只能是对象
+- `WeakSet` 中的对象都是弱引用，即垃圾回收机制不考虑 `WeakSet` 对该对象的引用，也就是说，如果其他对象都不再引用该对象，那么垃圾回收机制会自动回收该对象所占用的内存，不考虑该对象还存在于`WeakSet`中
+- 不可遍历，因为成员都是弱引用，随时可能消失
+
+##### Map
+
+- 类似于对象，也是键值对的集合，但是键值不限于字符串
+- 对同一个键多次赋值，后面的值会覆盖前面的值
+- Map 的键跟内存地址绑定的，只要内存地址不一样就视为两个键
+- size,set,get,has,delete,clear
+
+##### WeakMap
+
+与 `Map` 区别有两点：
+
+- `WeakMap` 只接受对象为键名（`null` 除外）
+- `WeakMap` 的键名所指向的对象，不计入垃圾回收机制
+
+### var、let、const 的区别
+
+- `var` 存在变量提升，可以在声明之前使用；`let`、`const` 因为暂时性死区不能在声明前使用
+- `var` 在全局作用域下声明变量会挂载在 `window` 上，其他两个不会
+- `const` 用于声明常量，不可再次赋值
+- 函数提升优于变量提升，函数提升会把整个函数挪到作用域顶部，变量提升只会把声明挪到作用域顶部
+
+## TypeScript
+
+##### interface
+
+- 类型检查
+- 只能定义对象类型
+- 可以 `extends`,`implements`
+- 合并声明

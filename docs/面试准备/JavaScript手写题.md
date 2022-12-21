@@ -6,11 +6,12 @@
 
 ```js
 /**
- * 1.如果传入的是值类型 会返回对应类型的构造函数创建的实例
- * 2.如果传入的是对象 返回对象本身
- * 3.如果传入 undefined 或者 null 会返回空对象
+ * 1. 判断传进来的上下文类型，如果是 undefined 或 null 的话指向window
+ * 2. 改变this指向
+ * 3. 执行函数并返回执行结果
  */
 Function.prototype._call = function (context, ...args) {
+  console.log(this);
   // 判断传进来的上下文类型，如果是undefined或者 null 指向window
   // 否则使用 Object() 将上下文包装成对象，否则context为基本类型时会报错
   const ctx = context == undefined ? window : Object(context);
@@ -230,7 +231,7 @@ class Scheduler {
   }
   // 运行任务
   run() {
-    if (!this.queue.length || this.runCount >= this.limit) return;
+    if (!this.queue.length || this.runCount > this.limit) return;
     // 运行任务数量+1
     this.runCount++;
     // 取出队头任务并执行
@@ -259,7 +260,7 @@ const deepClone = (obj, hash = new WeakMap()) => {
   hash.set(obj, target);
   // Reflect.ownKeys 的返回值等同于Object.getOwnPropertyNames加上Object.getOwnPropertySymbols的结果
   Reflect.ownKeys(obj).forEach((item) => {
-    if (isObject(item)) {
+    if (isObject(obj[item])) {
       target[item] = deepClone(obj[item], hash);
     } else {
       target[item] = obj[item];
@@ -341,4 +342,29 @@ class EventEmitter {
 }
 
 // export default new EventEmitter();
+```
+
+## 手写 instanceof
+
+```js
+const _instanceof = (A, B) => {
+  // A 为null或undefined，B不是函数时抛出错误
+  if (A == null || typeof B !== "function") {
+    throw Error("TypeError");
+  }
+  // A为基本类型时都返回false
+  if (typeof A !== "object" && typeof A !== "function") {
+    return false;
+  }
+
+  let proto = A.__proto__;
+  while (true) {
+    // 找到原型链终点
+    if (proto === null) return false;
+
+    if (proto === B.prototype) return true;
+    // 原型链逐层查找
+    proto = proto.__proto__;
+  }
+};
 ```
