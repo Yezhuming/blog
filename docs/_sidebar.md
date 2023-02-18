@@ -44,9 +44,9 @@
 
   - [浏览器](面试准备/浏览器.md)
 
-  - [Javascript](面试准备/JavaScript.md)
+  - [JavaScript](面试准备/JavaScript.md)
 
-  - [Javascript 手写题](面试准备/JavScript手写题.md)
+  - [JavaScript 手写题](面试准备/JavaScript手写题.md)
 
   - [React](面试准备/React.md)
 

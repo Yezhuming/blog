@@ -132,6 +132,8 @@ export default HOC(Index);
 
 `setState` 并不是单纯的同步或异步，它的表现会因调用场景不同而不同，在生命周期或者合成事件中表现为异步(批量合并更新)，而在 `setTimeout`、`setInterval` 等函数中，包括在 DOM 原生事件中，它都表现为同步。
 
+**React18** 开始`setState`不论在什么场景调用都为异步，但可以用`ReactDOM.flushSync`跳出批处理。
+
 参考资料：
 
 - [11 | setState 到底是同步的，还是异步的？](https://kaiwu.lagou.com/course/courseInfo.htm?courseId=510#/detail/pc?id=4860)
@@ -201,7 +203,6 @@ window.addEventListener("popstate", function (e) {
 **切换 url**
 
 - `window.location.hash`
-- `window.location.replace`
 
 **监听 url**
 
@@ -226,6 +227,8 @@ window.addEventListener("hashchange", function (e) {
 #### Switch
 
 通过`pathname`和组件的`path`进行匹配，找到符合的`Route`组件。
+
+**Router6 移除了 Switch 组件，新增 Routes 组件**
 
 #### Route
 
@@ -280,7 +283,7 @@ window.addEventListener("hashchange", function (e) {
 
 **React**
 
-使用单向链表保存需要更新的`DOM`，统一批量更新`DOM`，`React16` 起是异步进行，可中断恢复的。
+使用单向链表保存需要更新的`DOM`，统一批量更新`DOM`，`React16` 后引入了`Fiber`架构，使整个过程是异步，可中断恢复的。
 
 #### 事件机制
 
@@ -347,7 +350,7 @@ Vue 使用原生事件。
 
 不一定，如果我们要改变 `p` 标签的内容，原生 DOM 就是利用 `innerHTML` 属性，对于 React 而言要先生成虚拟 DOM，再 `diff` 对比找出变化的部分，最后再修改原生 DOM，单论这个例子来说原生 DOM 要比虚拟 DOM 快。
 
-但是虚拟 DOM 除了用于提高渲染性能以外，还有一个重要的作用就是通过模拟原生 DOM 的大部分特性，让研发从繁琐的 DOM 操作中释放出来，专注于业务和数据的处理，同时实现页面局部更新的能力。
+但是虚拟 DOM 最重要的作用就是提供一个更高效的研发模式，通过模拟原生 DOM 的大部分特性，让研发从繁琐的 DOM 操作中释放出来，专注于业务和数据的处理，同时保持一个还不错的性能。
 
 参考资料
 
@@ -399,7 +402,23 @@ Vue 使用原生事件。
 
 ## diff 算法
 
+diff 算法探讨的是虚拟 DOM 树发生变化后，生成 DOM 树更新补丁的方式。它通过对比新旧两棵虚拟 DOM 树的变更差异，将更新补丁作用于真实 DOM 上，以最小成本完成视图更新。
+
 当初次渲染生成 `fiber` 后，再次渲染会根据最新的状态数据生成新的虚拟 DOM，然后根据新的虚拟 DOM 去生成新的 `fiber`，这时候就要和之前的 `fiber` 做对比，决定如何生成新的 `fiber`，这个对比生成就是使用 `diff` 算法。
+
+### 三个策略
+
+#### 策略一：基于树的对比
+
+该策略对树进行**分层比较**，即两棵树只对同一层级的节点进行比较，如果发现节点不存在，则该节点和其子节点会被完全删除，不会进一步的比较，提升了比对效率
+
+#### 策略二：基于组件的对比
+
+该策略根据组件的 type 去判断其树结构是否相似，如果是相似的树结构则进入树比对，否则直接替换放入补丁中。
+
+#### 策略三：基于节点的对比
+
+节点对比发生在同层级比较中，通过**标记节点操作**生成补丁。节点操作包含插入、移动、删除等，其中节点重新排序同时涉及插入、移动和删除三个操作，可以通过添加 key 的方式，直接移动节点，减少消耗。
 
 ### 整体流程
 
@@ -416,6 +435,32 @@ diff 算法采用的是**深度优先遍历**，有子节点就遍历子节点�
 
 - [图解 React 的 diff 算法：核心就两个字 —— 复用](https://juejin.cn/post/7131741751152214030)
 - [为什么 React 的 Diff 算法不采用 Vue 的双端对比算法？](https://juejin.cn/post/7116141318853623839)
+- [React diff 算法的原理是什么](https://www.yuque.com/cuggz/interview/pgw8v4#5ae797bad8de984fcbd54bd94fc4b91b)
+
+## React18 新特性
+
+### Render API
+
+React18 引入了一个新的 API：`createRoot()`
+
+### setState 自动批处理
+
+在 React18 之前，只在 React 事件函数中进行批处理更新，在 `promise`、`setTimeout` 和原生处理事件函数中都不是批处理更新（同步更新）。
+
+如果想退出批处理更新，可以使用`flushSync`。
+
+## SSR
+
+服务端渲染是指在服务器中生成 HTML 片段，然后交给浏览器为其绑定状态和事件，成为可交互页面的过程。
+
+#### 优点
+
+- 更快的首屏加载速度：首屏渲染并不依赖于 js 文件，无需等待 js 文件的下载和执行，缩短白屏时间
+- 有利于 SEO：不同于客户端渲染返回地 HTML 文档中的节点是空的，服务器返回的是内容完整的 HTML 文档，能更好地被爬虫分析和索引
+
+#### 缺点
+
+- 服务端压力大
 
 ## dvajs
 

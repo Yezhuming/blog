@@ -6,34 +6,47 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Document</title>
   <style>
-    #box {
-      width: 200px;
-      height: 200px;
-      border: 1px solid red;
-      position: relative;
-    }
-    .children-box {
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: yellow;
-      margin: auto;
-      height: 100px;
-      width: 100px;
+    #modal {
+        height: 200px;
+        width: 200px;
+        line-height: 200px;
+        position: fixed;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        border: 1px solid black;
+        text-align: center;
     }
   </style>
 </head>
 <body>
-  <div id="box">
-    <div class="children-box" onclick="handleClick(1,2,3)"></div>
-    <a href="https://www.pingan8787.com" 
-  onclick="console.log('Leo 阻止原生事件~'); return false"
->
-  Leo 阻止原生事件
-</a>
-  </div>
+  <button id='open'>点击打开</button>
+	<button id='close'>关闭弹窗</button>
   <script src="./demo.js"></script>
+  <script>
+    const Modal = (function () {
+      let modal = null;
+      return function () {
+        if (!modal) {
+          modal = document.createElement('div');
+          modal.innerHTML = '您还未登录哦~';
+          modal.id = 'modal';
+          modal.style.display = 'none';
+          document.body.appendChild(modal);
+        }
+        return modal;
+      }
+    })();
+
+    document.getElementById('open').addEventListener('click', () => {
+      const modal = new Modal();
+      modal.style.display = 'block';
+    });
+
+    document.getElementById('close').addEventListener('click', () => {
+      const modal = document.getElementById('modal');
+      if (modal) modal.style.display = 'none';
+    });
+  </script>
 </body>
 </html>
