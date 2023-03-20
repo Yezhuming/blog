@@ -48,6 +48,8 @@
 
   - [JavaScript 手写题](面试准备/JavaScript手写题.md)
 
+  - [TypeScript](面试准备/TypeScript.md)
+
   - [React](面试准备/React.md)
 
   <!-- - [非技术方面](面试准备/非技术方面.md) -->

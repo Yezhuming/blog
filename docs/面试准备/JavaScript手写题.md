@@ -11,7 +11,6 @@
  * 3. 执行函数并返回执行结果
  */
 Function.prototype._call = function (context, ...args) {
-  console.log(this);
   // 判断传进来的上下文类型，如果是undefined或者 null 指向window
   // 否则使用 Object() 将上下文包装成对象，否则context为基本类型时会报错
   const ctx = context == undefined ? window : Object(context);
@@ -367,4 +366,27 @@ const _instanceof = (A, B) => {
     proto = proto.__proto__;
   }
 };
+```
+
+## 函数柯里化
+
+```js
+function creatCurry(fn) {
+  // 获取fn函数的参数长度
+  const fnArgsLength = fn.length;
+  let args = [];
+
+  return function calc(...innerArgs) {
+    // 收集参数
+    args = [...args, ...innerArgs];
+
+    if (args.length < fnArgsLength) {
+      // 参数未收集完，继续收集
+      return calc;
+    } else {
+      // 参数收集完，执行函数返回结果
+      return fn.apply(this, ...args);
+    }
+  };
+}
 ```
