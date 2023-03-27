@@ -1,18 +1,15 @@
-Promise.resolve().then(() => {
-  console.log(0);
-  return Promise.resolve(4);
-}).then(console.log).then(() => {
-  console.log(5.5);
-})
+const flatten = (arr) => {
+  let result = [];
 
-Promise.resolve().then(() => {
-  console.log(1);
-}).then(() => {
-  console.log(2);
-}).then(() => {
-  console.log(3);
-}).then(() => {
-  console.log(5);
-}).then(() => {
-  console.log(6);
-})
+  arr.forEach(item => {
+    if (Array.isArray(item)) {
+      result = result.concat(flatten(item));
+    } else {
+      result.push(item);
+    }
+  });
+
+  return result;
+}
+const arr = [1, [2, [3, 4, 5]]];
+console.log([].concat(...[1, [2, [3,4,5]]]));

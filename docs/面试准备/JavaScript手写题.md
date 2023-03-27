@@ -390,3 +390,35 @@ function creatCurry(fn) {
   };
 }
 ```
+
+## 数组扁平化
+
+#### ES6 中的 flat 方法
+
+#### 递归
+
+```js
+const flatten = (arr) => {
+  let result = [];
+
+  arr.forEach((item) => {
+    if (Array.isArray(item)) {
+      result = result.concat(flatten(item));
+    } else {
+      result.push(item);
+    }
+  });
+
+  return result;
+};
+```
+
+#### reduce + 递归
+
+```js
+const flatten = (arr) => {
+  return arr.reduce((prev, next) => {
+    return prev.concat(Array.isArray(next) ? flatten(next) : next);
+  }, []);
+};
+```
