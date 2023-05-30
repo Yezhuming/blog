@@ -1,5 +1,21 @@
 # React 面试题
 
+## 生命周期
+
+- 挂载阶段
+  - `constructor`:初始化组件的 `state` 和给事件处理方法绑定 `this`
+  - `getDerivedStateFromProps`:静态方法，不能使用 `this`
+  - `render`:根据 `state` 和 `props` 渲染组件
+  - `componentDidMount`:组件挂载后立即调用
+- 更新阶段
+  - `getDerivedStateFromProps`
+  - `shouldComponentUpdate`:用于优化渲染性能，控制组件是否重新渲染
+  - `render`
+  - `getSnapshotBeforeUpdate`:必须和 `componentDidUpdate` 一起使用，返回值作为第三个参数传给 `componentDidUpdate`
+  - `componentDidUpdate`:组件更新后立即调用，首次渲染不会执行此方法
+- 卸载阶段
+  - `componentWillUnmount`:组件卸载之前调用
+
 ## 类组件和函数组件有什么异同
 
 相同点:

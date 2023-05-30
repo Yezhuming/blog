@@ -11,8 +11,8 @@
 
 ## watch 和 computed 的区别
 
-- computed 计算属性：依赖其它属性值，并且计算出来的值有**缓存**，只有当依赖的属性值发生改变时，在下一次获取`computed`的值才会重新计算
-- watch 侦听器：用于**监听数据**，当数据发生变化时触发回调函数，执行一些“副作用”，比如更改 DOM 或者根据异步操作的结果去修改其他数据状态
+- `computed` 计算属性：依赖其它属性值，并且计算出来的值有**缓存**，只有当依赖的属性值发生改变时，在下一次获取`computed`的值才会重新计算
+- `watch` 侦听器：用于**监听数据**，当数据发生变化时触发回调函数，执行一些“副作用”，比如更改 DOM 或者根据异步操作的结果去修改其他数据状态
 
 ## v-if 和 v-show 的区别
 
@@ -22,9 +22,9 @@
 
 ## 组件通信
 
-- `props/$emits`
+- `props/defineProps,$emits/on`
 - `provide/inject`
-- `EventBus`
+- Vue2:`EventBus`,Vue3:`mitt`/`tiny-emitter`
 - `vuex/pinia`
 
 ## nextTick 的原理
@@ -39,19 +39,19 @@ nextTick 接受一个回调函数，在 DOM 更新完成后立即执行。它内
 
 ## Vue 双向数据绑定的原理
 
-Vue 是采用**数据劫持**结合**发布订阅模式**实现双向数据绑定的，主要由 Observer 发布者、Compile 模板解析和 Watcher 订阅者三者协同实现
+Vue 是采用**数据劫持**结合**发布订阅模式**实现双向数据绑定的，主要由 `Observer` 发布者、`Compile` 模板解析和 `Watcher` 订阅者三者协同实现
 
-1. 首先 Observer 会对所有数据进行劫持，转换为 getter/setter，Vue2 是利用 `Object.defineProperty`，Vue3 则是利用 `Proxy`，这样给某个数据赋值时会触发相应的 setter，那么就能监听到数据变化
-2. Compile 负责解析模板指令，将模板中的变量替换成数据，然后初始化渲染页面视图，并将每个指令对应的节点绑定更新函数，添加监听数据变动的订阅者
-3. Watcher 订阅者是 Observer 和 Compile 之间通信的桥梁，当数据发生变化时收到发布者发布的消息后，触发 Compile 绑定的回调函数，更新视图
+1. 首先 `Observer` 会对所有数据进行劫持，Vue2 利用 `Object.defineProperty`将其转换为 `getter/setter`，Vue3 则是利用 `Proxy`创建响应式对象，这样给某个数据赋值时会触发相应的 `setter`，发布消息通知订阅者
+2. `Compile` 负责解析模板指令，将模板中的变量替换成数据，然后初始化渲染页面视图，并将每个指令对应的节点绑定更新函数，添加监听数据变动的订阅者
+3. `Watcher` 订阅者是 `Observer` 和 `Compile` 之间通信的桥梁，当数据发生变化时收到发布者发布的消息后，触发 `Compile` 绑定的回调函数，更新视图
 
 ## Vue 3.0 的更新
 
-- 监测机制的改变:Vue2 通过 `Object.defineProperty` 进行数据劫持来监测数据变化，Vue3 使用 `Proxy` 来创建响应式对象，仅将 `getter/setter` 用于 `ref`
-- 数据和方法的定义:Vue2 中**选项式 API** 在代码里分割了不同的属性：`data`,`computed`,`methods` 等；而 Vue3 中的**组合式 API**通过方法来分割，这样代码会更简洁易懂，更方便和 `TypeScript` 结合使用
-- Vue3 支持碎片(Fragment):Vue2 的 `template` 中只能有一个根节点，Vue3 没有这个限制
-- 生命周期不同：Vue3 的组合式 API 引入了 `setup` 钩子函数，移除了 `create` 相关的两个阶段
-- EventBus 通信模式的改变：Vue3 移除了`$on`、`$off`、`$once`等实例方法，`EventBus`通信需要依赖第三方库`mitt`或者`tiny-emitter`
+- **监测机制的改变**:Vue2 通过 `Object.defineProperty` 进行数据劫持来监测数据变化，Vue3 使用 `Proxy` 来创建响应式对象，仅将 `getter/setter` 用于 `ref`
+- **数据和方法的定义**:Vue2 中**选项式 API** 在代码里分割了不同的属性：`data`,`computed`,`methods` 等；而 Vue3 中的**组合式 API**通过方法来分割，这样代码会更简洁易懂，更方便和 `TypeScript` 结合使用
+- **Vue3 支持碎片(Fragment)**:Vue2 的 `template` 中只能有一个根节点，Vue3 没有这个限制
+- **生命周期不同**:Vue3 的组合式 API 引入了 `setup` 钩子函数，移除了 `create` 相关的两个阶段
+- **EventBus 通信模式的改变**：Vue3 移除了`$on`、`$off`、`$once`等实例方法，`EventBus`通信需要依赖第三方库`mitt`或者`tiny-emitter`
 
 ## Object.defineProperty 和 proxy 的区别
 
