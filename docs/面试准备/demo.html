@@ -6,24 +6,43 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Document</title>
   <style>
-    div~p {
-      color: red;
+    #app {
+      width: 800px;
+      height: 400px;
+      border: 1px solid black;
+      display: flex;
+    }
+
+    .box {
+      width: 100px;
+      height: 100px;
+      background-color: blue;
+      color: #fff;
     }
   </style>
 </head>
 <body>
-  <script src="./demo.js"></script>
-  <div>
-    <p>p1</p>
-    <p>p2</p>
-    <p>p3</p>
+  <!-- <script src="./demo.js"></script> -->
+  <div id='app'>
+    <div class="box">1</div>
+    <div class="box">2</div>
+    <div class="box">3</div>
+    <div class="box">4</div>
   </div>
-  <p>p4</p>
-  <p>p5</p>
-  <p>p6</p>
-  <div>div</div>
-  <script>
-    
-  </script>
 </body>
+<script src="https://cdn.bootcss.com/vue/2.6.10/vue.min.js"></script>
+<script>
+  console.log(1)
+  setTimeout(() => {
+    console.log(2)
+  }, 0)
+  new Promise((resolve) => {
+    console.log(3)
+    resolve(4)
+  }).then(res => {
+    console.log(5)
+    console.log(res)
+  })
+  console.log(6)
+</script>
 </html>
