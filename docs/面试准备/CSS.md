@@ -62,6 +62,12 @@ BFC(Block Format Context)就是**块级格式化上下文**，可以理解为是
 
 - [2022 年移动端适配方案指南 — 全网最新最全](https://juejin.cn/post/7046169975706353701)
 
+### 方案选择
+
+- 媒体查询@media
+- 使用 rem 单位
+- viewport 适配（使用 vh,vw 单位，px 转 vw）
+
 ## requestAnimationFrame
 
 顾名思义就是**请求动画帧**的意思，该方法用于告诉浏览器在下次重绘之前执行指定的回调函数更新动画。
