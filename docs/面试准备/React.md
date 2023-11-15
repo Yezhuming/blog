@@ -198,6 +198,16 @@ Hooks 是一套能够使函数组件更强大、更灵活的“钩子”。
 
 - [08 | 深入 React-Hooks 工作机制：“原则”的背后，是“原理”](https://kaiwu.lagou.com/course/courseInfo.htm?courseId=510#/detail/pc?id=4857)
 
+### useLayoutEffect
+
+`useLayoutEffect` 是在浏览器重新绘制屏幕之前触发的，比如展示一个 `tooltip` 前需要计算位置就需要放在 `useLayoutEffect` 中计算，这样可以避免用户看到 `tooltip` 的位置变化
+
+### 怎么看待每一个函数都用 useCallback 包裹
+
+被 `useCallback` 包裹的函数在组件更新时会检查依赖项是否发生改变，如果改变则销毁重建，如果没有则函数地址不会变化，搭配 `React.memo` 缓存子组件使用时可以避免子组件不必要的重复渲染
+
+但不是每个函数都需要用 `useCallback` 缓存，因为实际上被包裹的函数也会销毁重建，只是放在了 `useCallback` 的管理队列中，当大量使用 `useCallback` 时，管理队列中的函数会很多，这样组件每一次重新渲染时都需要去遍历管理队列中的函数，找到有依赖项的函数检查其依赖项是否发生变化
+
 ## 路由
 
 ### react-router-dom、react-router 和 history 三者的关系
@@ -508,3 +518,11 @@ React18 引入了一个新的 API：`createRoot()`
 ### 数据流向
 
 数据的改变发生通常是通过用户交互行为或者浏览器行为（如路由跳转等）触发的，当此类行为会改变数据的时候可以通过 `dispatch` 发起一个 `action`，如果是同步行为会直接通过 `Reducer` 改变 `State` ，如果是异步行为（副作用）会先触发 `Effect` 然后流向 `Reducer` 最终改变 `State`
+
+## 项目中做过什么性能优化
+
+- 列表渲染设置`key`
+- `React.memo` 搭配 `useMemo` 和 `useCallback` 缓存子组件和参数
+- 图片懒加载
+- 虚拟列表
+- `React.lazy` 搭配 `Suspense`实现懒加载组件
